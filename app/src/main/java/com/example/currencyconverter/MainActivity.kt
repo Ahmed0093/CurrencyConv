@@ -1,6 +1,6 @@
 package com.example.currencyconverter
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,39 +8,71 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import androidx.lifecycle.Observer
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material.*
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.currencyconverter.ui.CurrAdapter
-import com.example.currencyconverter.ui.CurrViewModel
+import com.example.currencyconverter.ui.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.math.BigDecimal
+/**
+ * Add Compose to already Existing Old Project
+ * [addComposeUIToOldFeature]
+ * 1. make the [MainActivity] extends [ComponentActivity]
+ * 2. add [my_composable] as Compose View in XML
+ * UnComment the Oncreate for Compose to
+ * Run the Compose Converted Screen !
+ */
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     lateinit var currViewModel: CurrViewModel
     lateinit var currAdapter: CurrAdapter
-    var selectedCurr = "USD"
-    var currList: Array<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        //--Add Compose TO OLD Feature
+        addComposeUIToOldFeature()
+
         currViewModel = ViewModelProvider(this).get(CurrViewModel::class.java)
-        currViewModel.selectedCurr = selectedCurr
-
         currViewModel.getCurrList()
-
-        currViewModel.currResponseModelLiveDataUiState.observe(
-            this, Observer { currResponse ->
-                currAdapter.setCurrencyMap(currResponse.quotes.getCurrListAsMap())
-                initSpinner()
+        currViewModel.currListLiveDate.observe(
+            this, { currList ->
+                initSpinner(currList)
 
             })
         initAdapter()
-        initListenr()
+        initListener()
     }
 
-    private fun initListenr() {
+    private fun addComposeUIToOldFeature() {
+        findViewById<ComposeView>(R.id.my_composable).setContent {
+            MaterialTheme {
+                Text(text = "Hello from compose view!")
+            }
+        }
+    }
+//---- Start COMPOSE ONCREATE------
+//@ExperimentalComposeUiApi
+//override fun onCreate(savedInstanceState: Bundle?) {
+//    super.onCreate(savedInstanceState)
+//    currViewModel = ViewModelProvider(this).get(CurrViewModel::class.java)
+//    currViewModel.getCurrList()
+//    setContent {
+//        MainComposeScreen(currViewModel)
+//    }
+//}
+//---- End COMPOSE ONCREATE------
+
+    private fun initListener() {
+        textview.setOnClickListener{
+            val intent = Intent(this, MainComposeActivity::class.java)
+            startActivity(intent)
+
+        }
         edtText.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(value: CharSequence?, start: Int, before: Int, count: Int) {
 
@@ -52,11 +84,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 s.toString().toBigDecimalOrNull()?.let {
-                    currViewModel.amountEnteredByUser = it
+                    currViewModel.onTextChange(it.toString())
                     currAdapter.notifyDataSetChanged()
                 }
                 if (s.toString().isEmpty()) {
-                    currViewModel.amountEnteredByUser = BigDecimal.ONE
+                    currViewModel.onTextChange(BigDecimal.ONE.toString())
                     currAdapter.notifyDataSetChanged()
                 }
             }
@@ -74,38 +106,31 @@ class MainActivity : AppCompatActivity() {
         cur_rv.adapter = currAdapter
     }
 
-    private fun initSpinner() {
+    private fun initSpinner(currList: List<String>) {
         val spinner = findViewById<Spinner>(R.id.spinner)
-        if (currList == null) {
-            currList =
-                currViewModel.currResponseModel?.quotes?.getCurrListAsMap()?.keys?.toTypedArray() //arrayOf("USD", "AUD", "EGP")
-            val adapter =
-                ArrayAdapter<String>(
-                    this,
-                    android.R.layout.simple_spinner_dropdown_item,
-                    currList as Array<out String>
-                )
 
-            spinner.adapter = adapter
+        val adapter =
+            ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                currList.toTypedArray() as Array<out String>
+            )
 
-            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    arg0: AdapterView<*>?,
-                    arg1: View?,
-                    arg2: Int,
-                    arg3: Long
-                ) {
-                    // Do what you want
-                    selectedCurr = spinner.selectedItem.toString()
-                    //currAdapter.setSelectedCurr(selectedCurr)
-                    currViewModel.selectedCurr = selectedCurr
-                    currAdapter.notifyDataSetChanged()
+        spinner.adapter = adapter
 
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                arg0: AdapterView<*>?,
+                arg1: View?,
+                arg2: Int,
+                arg3: Long
+            ) {
+                currViewModel.onSpinItemClick(spinner.selectedItem.toString())
+                currAdapter.notifyDataSetChanged()
 
-                }
-
-                override fun onNothingSelected(arg0: AdapterView<*>?) {}
             }
+
+            override fun onNothingSelected(arg0: AdapterView<*>?) {}
         }
     }
 }

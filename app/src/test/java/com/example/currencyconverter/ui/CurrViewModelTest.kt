@@ -34,28 +34,28 @@ class CurrViewModelTest {
     }
 
 
-    @Test
-    fun ` if SelectedCurrency is USD Check Conversion Items by position`() {
-        currViewModel.selectedCurr = "USD"
-        currViewModel.amountEnteredByUser = BigDecimal.ONE
-        val mockCurrMap = getMockCurrMap()
-
-        assertEquals(
-            currViewModel.getExchangeRateText(0, mockCurrMap), "1 USD = 3.6700 AED"
-        )
-        assertEquals(
-            currViewModel.getExchangeRateText(1, mockCurrMap), "1 USD = 15.6800 EGP"
-        )
-        assertEquals(
-            currViewModel.getExchangeRateText(2, mockCurrMap), "1 USD = 0.8200 EUR"
-        )
-        assertEquals(
-            currViewModel.getExchangeRateText(3, mockCurrMap), "1 USD = 108.9200 JPY"
-        )
-        assertEquals(
-            currViewModel.getExchangeRateText(4, mockCurrMap), "1 USD = 1.0000 USD"
-        )
-    }
+//    @Test
+//    fun ` if SelectedCurrency is USD Check Conversion Items by position`() {
+//        currViewModel.selectedCurr = "USD"
+//        currViewModel.amountEnteredByUser = BigDecimal.ONE
+//        val mockCurrMap = getMockCurrMap()
+//
+//        assertEquals(
+//            currViewModel.getExchangeRateText(0, mockCurrMap), "1 USD = 3.6700 AED"
+//        )
+//        assertEquals(
+//            currViewModel.getExchangeRateText(1, mockCurrMap), "1 USD = 15.6800 EGP"
+//        )
+//        assertEquals(
+//            currViewModel.getExchangeRateText(2, mockCurrMap), "1 USD = 0.8200 EUR"
+//        )
+//        assertEquals(
+//            currViewModel.getExchangeRateText(3, mockCurrMap), "1 USD = 108.9200 JPY"
+//        )
+//        assertEquals(
+//            currViewModel.getExchangeRateText(4, mockCurrMap), "1 USD = 1.0000 USD"
+//        )
+//    }
 
     @ExperimentalCoroutinesApi
     @Test

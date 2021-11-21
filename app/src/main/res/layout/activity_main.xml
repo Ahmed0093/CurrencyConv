@@ -13,16 +13,17 @@
         android:layout_height="wrap_content"
         android:text="Enter Amount"
         android:textSize="20sp"/>
+
     <EditText
         android:id="@+id/edtText"
-        android:layout_below="@+id/textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:maxLength="10"
-        android:imeOptions="actionDone"
+        android:layout_below="@+id/textview"
         android:hint="1"
-        android:importantForAutofill="no" />
+        android:imeOptions="actionDone"
+        android:importantForAutofill="no"
+        android:inputType="number"
+        android:maxLength="10" />
     <Spinner
         android:id="@+id/spinner"
         android:layout_below="@+id/edtText"
@@ -32,16 +33,21 @@
         android:layout_marginEnd="30dp"
         android:textSize="20sp"
         />
-
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/my_composable"
+        android:layout_width="match_parent"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/spinner"
+        android:layout_height="wrap_content" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cur_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="50dp"
         android:layout_centerHorizontal="true"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_below="@+id/spinner"
+        android:layout_below="@+id/my_composable"
         android:clipToPadding="false"
         tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/conv_list_item"
